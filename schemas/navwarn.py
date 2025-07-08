@@ -49,13 +49,22 @@ class NavWarning(BaseModel):
 
         self.coordinates = coords
 
+        line_match_re = r"[Ll]ine"
+        if len(re.findall(line_match_re,self.full_text)) > 1:
+            is_line = True
+        else:
+            is_line = False
+
         match len(coords):
             case 0:
                 self.warning_type = WarningType.GENERAL
             case 1:
                 self.warning_type = WarningType.POINT
             case 2:
-                self.warning_type = WarningType.LINE
+                if is_line:
+                    self.warning_type = WarningType.LINE
+                else:
+                    self.warning_type = WarningType.POINT
             case _:
                 self.warning_type = WarningType.POLYGON
                 if coords[0] != coords[-1]:
